@@ -1,34 +1,28 @@
-
 package main
 
 import (
 	"bufio"
-	"strings"
-	// "fmt"
-	// "log"
+	"fmt"
 	"os"
-	// "reflect"
-	// "regexp"
-	// "strconv"
-	// "strings"
+	"strings"
 )
 
 type Room struct {
-	name string
-	x, y int //coordinates for visualization
-	visited bool // if visited already, then ignore on second pass of bfs exploration
-	path []*Room // rooms linking to this room struct 
+	name string // Room Identifier (Could be digit/string/whatever)
+	x, y int // Coordinates for visualization
+	visited bool // If visited already, then ignore on second pass of bfs exploration
+	path []*Room // Rooms linking to this room struct 
 }
 
 type Path struct {
-	roomsInPath []*Room // list of rooms in this path
-	numberOfAnts int
+	roomsInPath []*Room // List of rooms in this path
+	numberOfAnts int // Number of ants in the
 }
 
 type AntFarm struct {
 	rooms map[string]*Room
 	paths []*Path
-	startRoom, endRoom Room
+	startRoom, endRoom *Room
 }
 
 func parseFile(filepath string) (*AntFarm, error) {
@@ -67,10 +61,16 @@ func parseFile(filepath string) (*AntFarm, error) {
 			continue // We skip if we have comments or anything that is not a starting or ending room
 		}
 
-		
+		if antFarm.
 	}	
 
 
+
+	// Ant Farm does not have a start or end room
+
+	if antFarm.startRoom == nil || antFarm.endRoom == nil {
+		return nil, fmt.Errorf("Missing Start Room or End Room")
+	}
 
 	return antFarm, nil
 }
