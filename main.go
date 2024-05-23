@@ -126,3 +126,45 @@ func parseFile(filepath string) (*AntFarm, error) {
 	return antFarm, nil
 }
 
+/*
+Breadth First Search answers two questions:
+1) Is there a path from node A to node B?
+2) What is the shortest path from node A to node B?
+
+Using queues: search nodes in the order they were added 
+
+
+
+Summary:
+-> Initialize a queue to store paths and a map to track visited paths. 
+-> 
+->
+->
+
+
+
+
+
+Returns a list of paths which is a list of rooms, so a 2d room array
+*/
+
+func bfsTraversal(antFarm *AntFarm) [][]*Room{
+	// 1) Initializing a queue to keep track of explored paths
+	// Each element in the queue is a path (a list of rooms)
+	// -> Starting Point: Enqueue start room
+	var paths [][]*Room
+	queue := [][]*Room{{antFarm.startRoom}} 
+	visited := map[string]bool{antFarm.startRoom.name:true}
+
+	// We would like to prevent cycles in the farm and we use a visited map by doing so
+	for len(queues) != 0 {
+		path := queue[0] // extract from the front of the queue 
+		queue = queue[1:] // mechanism to dequeue from the front of the queue
+		if visited[]
+	}
+	return paths
+}
+
+func main() {
+
+}
