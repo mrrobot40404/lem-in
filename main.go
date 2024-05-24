@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sort"
 	"strings"
 )
 
@@ -150,12 +151,12 @@ Summary:
 Returns a list of paths which is a list of rooms, so a 2d room array
 */
 
-func bfsTraversal(antFarm *AntFarm) [][]*Room{
+func bfsTraversal(antFarm *AntFarm) []*Path {
 	// 1) Initializing a queue to keep track of explored paths
 	// Each element in the queue is a path (a list of rooms)
 	// -> Starting Point: Enqueue start room
 	var paths []*Path
-	queue := []Path{ 
+	queue := []Path { 
 		{rooms: []*Room{antFarm.startRoom},
 		length: 1},
 	} 
@@ -163,8 +164,8 @@ func bfsTraversal(antFarm *AntFarm) [][]*Room{
 
 	// We would like to prevent cycles in the farm and we use a visited map by doing so
 	for len(queue) != 0 {
-		path := queue[0] // extract from the front of the queue 
-		queue = queue[1:] // mechanism to dequeue from the front of the queue
+		path := queue[0] // Extract from the front of the queue 
+		queue = queue[1:] // Mechanism to dequeue from the front of the queue
 		lastRoom := path.rooms[len(path.rooms)-1]
 		
 		if lastRoom == antFarm.endRoom {
@@ -174,18 +175,26 @@ func bfsTraversal(antFarm *AntFarm) [][]*Room{
 		
 		for _, link := range lastRoom.links {
 			if !visited[link.name] {
-
-				queue = append(queue, link.links)
-				visited[link.name] = true // mark as visited
+				newPathRooms := make([]*Room, len(path.rooms)) 
+				copy(newPathRooms, path.rooms) // Copying existing path to new path
+				newPathRooms = append(newPathRooms, link)
+				newPath := Path{
+					rooms: newPathRooms,
+					length: len(newPathRooms),
+				}
+				queue = append(queue, newPath)
+				visited[link.name] = true // Mark as visited
 			}
 		}
 	}
-
-
+	// Sorting paths by Length
+	sort.Slice(paths, func(i, j int) bool {
+		return paths[i].length < paths[j].length
+	})
 
 	return paths
 }
 
 func main() {
-
+	
 }
