@@ -195,8 +195,20 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 	return paths
 }
 
-func distributeAnts(paths []*Path) {
-	
+/* 
+Goal: We need to move the ants iteratively and print their movements based on
+the sorted list of paths from the BFS traversal
+
+
+Data structures to track:
+
+Which path is the ant along? => Path indices 1....n ("column")
+
+Which index `i` in the path the ant is in ("row")
+
+*/
+func distributeAnts(sortedPaths []*Path) {
+
 }
 
 func main() {
@@ -232,8 +244,8 @@ func main() {
 		return 
 	}
 
-	paths := bfsTraversal(antFarm)
+	sortedPaths := bfsTraversal(antFarm)
 
-	distributeAnts(paths)
+	distributeAnts(sortedPaths)
 
 }
