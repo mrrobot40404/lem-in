@@ -187,14 +187,50 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 			}
 		}
 	}
-	// Sorting paths by Length
-	sort.Slice(paths, func(i, j int) bool {
+	// Sorting paths by Length using anonymous functions
+	sort.SliceStable(paths, func(i, j int) bool {
 		return paths[i].length < paths[j].length
 	})
 
 	return paths
 }
 
+func distributeAnts() {
+
+}
+
 func main() {
-	
+	args := os.Args[1:]
+	if len(args) != 1 {
+		fmt.Println("Number of arguments passed in leads to program termination.")
+		return 
+	}
+	filepath := os.Args[1]
+
+	// Printing the ant farm line by line
+	file, err := os.Open(filepath)
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var fileLines []string
+	for scanner.Scan() {
+		fileLines = append(fileLines, scanner.Text())
+	}
+
+	for _, line := range fileLines {
+		fmt.Println(line)
+	}
+
+	// antFarm, err := parseFile(filepath)
+	// if err != nil {
+	// 	fmt.Println("ERROR:", err)
+	// 	return 
+	// }
+
+	// paths := bfsTraversal(antFarm)
+
 }
