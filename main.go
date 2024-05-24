@@ -14,10 +14,10 @@ type Room struct {
 	links []*Room // Rooms linking to this room struct 
 }
 
-// type Path struct {
-// 	roomsInPath []*Room // List of rooms in this path
-// 	antsInPath int // Number of ants in the
-// }
+type Path struct {
+	rooms []*Room // List of rooms in this path
+	length int // Number of ants in the
+}
 
 type AntFarm struct {
 	rooms map[string]*Room // If visited already, then ignore on second pass of bfs exploration
@@ -133,16 +133,18 @@ Breadth First Search answers two questions:
 
 Using queues: search nodes in the order they were added 
 
-
+Goal: Implement BFS on all paths and sort the paths
 
 Summary:
 -> Initialize a queue to store paths and a map to track visited paths. 
--> 
-->
-->
-
-
-
+-> Start with the start room, enqueueing it and mark it as visited
+-> While there are paths in the queue 
+	-> Dequeue a path 
+	-> Get the last room in the path
+	-> If the last room in the path is an end room, this path is considered a complete path and add it to the list of paths.
+	-> Else, for each linked/connecting room
+		-> If not visited, create a new path with the linked room, enqueue it, and mark it as visited
+-> Return list of complete paths
 
 
 Returns a list of paths which is a list of rooms, so a 2d room array
@@ -152,16 +154,35 @@ func bfsTraversal(antFarm *AntFarm) [][]*Room{
 	// 1) Initializing a queue to keep track of explored paths
 	// Each element in the queue is a path (a list of rooms)
 	// -> Starting Point: Enqueue start room
-	var paths [][]*Room
-	queue := [][]*Room{{antFarm.startRoom}} 
+	var paths []*Path
+	queue := []Path{ 
+		{rooms: []*Room{antFarm.startRoom},
+		length: 1},
+	} 
 	visited := map[string]bool{antFarm.startRoom.name:true}
 
 	// We would like to prevent cycles in the farm and we use a visited map by doing so
-	for len(queues) != 0 {
+	for len(queue) != 0 {
 		path := queue[0] // extract from the front of the queue 
 		queue = queue[1:] // mechanism to dequeue from the front of the queue
-		if visited[]
+		lastRoom := path.rooms[len(path.rooms)-1]
+		
+		if lastRoom == antFarm.endRoom {
+			paths = append(paths, &path)
+			continue
+		}
+		
+		for _, link := range lastRoom.links {
+			if !visited[link.name] {
+
+				queue = append(queue, link.links)
+				visited[link.name] = true // mark as visited
+			}
+		}
 	}
+
+
+
 	return paths
 }
 
