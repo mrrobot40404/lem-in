@@ -224,8 +224,8 @@ func main() {
 	for _, line := range fileLines {
 		fmt.Println(line)
 	}
-
-	fmt.Print("hello")
+	fmt.Println()
+	
 	// antFarm, err := parseFile(filepath)
 	// if err != nil {
 	// 	fmt.Println("ERROR:", err)
