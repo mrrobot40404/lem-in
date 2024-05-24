@@ -225,6 +225,7 @@ func main() {
 		fmt.Println(line)
 	}
 
+	fmt.Print("hello")
 	// antFarm, err := parseFile(filepath)
 	// if err != nil {
 	// 	fmt.Println("ERROR:", err)
