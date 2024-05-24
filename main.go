@@ -202,13 +202,21 @@ the sorted list of paths from the BFS traversal
 
 Data structures to track:
 
-Which path is the ant along? => Path indices 1....n ("column")
+1. Initialize Data structures: We need to track
+* Which path is the ant along? => Path indices 1....n ("column")?
+* Which index `i` in the path the ant is in ("row")?
+* How many ants are assigned to each path?
 
-Which index `i` in the path the ant is in ("row")
+2. Assign Ants to Paths: Distribute ants to paths based on the lengths of the paths to ensure optimal movement  
+* Assign each ant to the shortest path seen, considering the number of ants already assigned to each path
+
+3. Simulating and Printing movements: We must iteratively move the ants along the paths, printing their movements
+* At each step, move all ants that are able to make a move and print their new positions
+* We continue this until we reach the terminating condition which is all ants reaching the end room
 
 */
 func distributeAnts(sortedPaths []*Path) {
-
+	
 }
 
 func main() {
