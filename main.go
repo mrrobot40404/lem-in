@@ -195,8 +195,8 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 	return paths
 }
 
-func distributeAnts() {
-
+func distributeAnts(paths []*Path) {
+	
 }
 
 func main() {
@@ -225,13 +225,15 @@ func main() {
 		fmt.Println(line)
 	}
 	fmt.Println()
-	
-	// antFarm, err := parseFile(filepath)
-	// if err != nil {
-	// 	fmt.Println("ERROR:", err)
-	// 	return 
-	// }
 
-	// paths := bfsTraversal(antFarm)
+	antFarm, err := parseFile(filepath)
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		return 
+	}
+
+	paths := bfsTraversal(antFarm)
+
+	distributeAnts(paths)
 
 }
