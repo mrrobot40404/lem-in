@@ -217,8 +217,8 @@ Data structures to track:
 */
 func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	// 1. Init data structs
-	var antPaths map[int]int // Map to track which path each ant is assigned to
-	var antPositions map[int]int // Map to track each ant's current position in assigned path => maps antID to block index
+	antPaths := make(map[int]int) // Map to track which path each ant is assigned to
+	antPositions := make(map[int]int) // Map to track each ant's current position in assigned path => maps antID to block index
 	antsInPath := make([]int, len(sortedPaths)) 
 
 	// 2. Assign Ants to Paths
@@ -246,14 +246,14 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	var stepPrint string
 	for step := 0 ;; step++ { // Simulating each step
 		antMoved = false
-		moves = ""
+		// moves = ""
 		for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
 			if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms-1 { // -1 because it's an index
 				antsInPath[antID]++ // Update ant position to i+1 where i is the ant's current position
 				antMoved = true
 				currentRoomName = sortedPaths[pathIndex].rooms[antPositions[antID]].name
 				stepPrint += "L"
-				stepPrint += string(antID)
+				stepPrint += fmt.Sprint(antID)
 				stepPrint += "-"
 				stepPrint += currentRoomName
 				stepPrint += " "
