@@ -17,7 +17,7 @@ type Room struct {
 
 type Path struct {
 	rooms []*Room // List of rooms in this path
-	length int // Number of ants in the
+	numberOfRooms int // Number of rooms
 }
 
 type AntFarm struct {
@@ -158,7 +158,7 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 	var paths []*Path
 	queue := []Path { 
 		{rooms: []*Room{antFarm.startRoom},
-		length: 1},
+		numberOfRooms: 1},
 	} 
 	visited := map[string]bool{antFarm.startRoom.name:true}
 
@@ -180,16 +180,16 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 				newPathRooms = append(newPathRooms, link)
 				newPath := Path{
 					rooms: newPathRooms,
-					length: len(newPathRooms),
+					numberOfRooms: len(newPathRooms),
 				}
 				queue = append(queue, newPath)
 				visited[link.name] = true // Mark as visited
 			}
 		}
 	}
-	// Sorting paths by Length using anonymous functions
+	// Sorting paths by numberOfRooms using anonymous functions
 	sort.SliceStable(paths, func(i, j int) bool {
-		return paths[i].length < paths[j].length
+		return paths[i].numberOfRooms < paths[j].numberOfRooms
 	})
 
 	return paths
@@ -203,11 +203,11 @@ the sorted list of paths from the BFS traversal
 Data structures to track:
 
 1. Initialize Data structures: We need to track
-* Which path is the ant along? => Path indices 1....n ("column")?
-* Which index `i` in the path the ant is in ("row")?
+* Which path is the ant with ID along? => Path indices 1....n ("column")?
+* Which index `i` in the path the ant with ID is in ("row")?
 * How many ants are assigned to each path?
 
-2. Assign Ants to Paths: Distribute ants to paths based on the lengths of the paths to ensure optimal movement  
+2. Assign Ants to Paths: Distribute ants to paths based on the numberOfRoomss of the paths to ensure optimal movement  
 * Assign each ant to the shortest path seen, considering the number of ants already assigned to each path
 
 3. Simulating and Printing movements: We must iteratively move the ants along the paths, printing their movements
@@ -215,8 +215,42 @@ Data structures to track:
 * We continue this until we reach the terminating condition which is all ants reaching the end room
 
 */
-func distributeAnts(sortedPaths []*Path) {
+func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
+	// 1. Init data structs
+	var antPaths map[int]int // Map to track which path each ant is assigned to
+	var antPositions map[int]int // Map to track each ant's current position in assigned path => maps antID to block index
+	antsInPath := make([]int, len(sortedPaths)) 
+
+	// 2. Assign Ants to Paths
+	for antID := 1; antID < antFarm.numberOfAnts; antID++ {
+		pathIndex := 0
+		minCost := antsInPath[0] + sortedPaths[0].numberOfRooms
+		for i := 1; i < len(sortedPaths); i++ {
+			cost := sortedPaths[i].numberOfRooms + antsInPath[i]
+			if cost < minCost {
+				minCost = cost
+				pathIndex = i // We keep on updating the minimum cost and path index to the new min cost
+			}
+		}
+		antPaths[antID] = pathIndex // That ant now belongs to the assigned path
+		antsInPath[pathIndex]++ // Increment the number of ants in that chosen path
+	}
 	
+	// 3. Simulate and Print Movements
+	// Iterate through all ants and move them along their assigned paths
+	// Print the movements of the ants for the current step
+	// Repeat until no more ants can be moved
+	antMoved := false
+	for step := 0 ;; step++ { // Simulating each step
+		for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
+			if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms {
+				antsInPath[antID]++
+				
+			}
+		}
+
+	}
+
 }
 
 func main() {
@@ -254,6 +288,5 @@ func main() {
 
 	sortedPaths := bfsTraversal(antFarm)
 
-	distributeAnts(sortedPaths)
-
+	distributeAnts(sortedPaths, antFarm)
 }
