@@ -249,7 +249,7 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 		// moves = ""
 		for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
 			if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms-1 { // -1 because it's an index
-				antsInPath[antID]++ // Update ant position to i+1 where i is the ant's current position
+				antPositions[antID]++ // Update ant position to i+1 where i is the ant's current position
 				antMoved = true
 				currentRoomName = sortedPaths[pathIndex].rooms[antPositions[antID]].name
 				stepPrint += "L"
@@ -263,6 +263,7 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 			break
 		}
 		fmt.Println(stepPrint)
+		stepPrint = ""
 	}
 }
 
