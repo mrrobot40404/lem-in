@@ -242,7 +242,7 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	// var moves string
 	var currentRoomName string
 	var stepPrint string
-	LastAnt := len(sortedPaths)
+	LastAnt := len(antFarm.startRoom.links)
 
 	for step := 0; ; step++ { // Simulating each step
 		antMoved = false
@@ -261,7 +261,7 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 		}
 		// fmt.Println("Step: ", LastAnt, " ")
 		if LastAnt < antFarm.numberOfAnts {
-			LastAnt += 1
+			LastAnt++
 		}
 		// for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
 		// 	if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms-1 { // -1 because it's an index
