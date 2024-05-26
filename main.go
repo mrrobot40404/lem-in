@@ -4,25 +4,25 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 type Room struct {
-	name string // Room Identifier (Could be digit/string/whatever)
-	x, y int // Coordinates for visualization
-	links []*Room // Rooms linking to this room struct 
+	name  string  // Room Identifier (Could be digit/string/whatever)
+	x, y  int     // Coordinates for visualization
+	links []*Room // Rooms linking to this room struct
 }
 
 type Path struct {
-	rooms []*Room // List of rooms in this path
-	numberOfRooms int // Number of rooms
+	rooms         []*Room // List of rooms in this path
+	numberOfRooms int     // Number of rooms
 }
 
 type AntFarm struct {
-	rooms map[string]*Room // If visited already, then ignore on second pass of bfs exploration
-	numberOfAnts int // Number of ants in the ant farm
+	rooms              map[string]*Room // If visited already, then ignore on second pass of bfs exploration
+	numberOfAnts       int              // Number of ants in the ant farm
 	startRoom, endRoom *Room
 }
 
@@ -35,7 +35,7 @@ func parseFile(filepath string) (*AntFarm, error) {
 	defer file.Close() // Close file when function is closed
 
 	// Initializing Scanner and AntFarm structure
-	
+
 	scanner := bufio.NewScanner(file) // Scanner object created to read file line by line
 
 	antFarm := &AntFarm{
@@ -44,23 +44,23 @@ func parseFile(filepath string) (*AntFarm, error) {
 
 	// Storing either start or end room
 	var pendingType string
-	
+
 	// Reading file line by line
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text()) // Trim the line for any trailing whitespace
 
 		if line == "" { // If no contents in the line
 			continue
-		} 
+		}
 
 		if antFarm.numberOfAnts == 0 {
 			antFarm.numberOfAnts, err = strconv.Atoi(line)
 			if err != nil {
 				return nil, fmt.Errorf("Invalid number of ants")
-			}	
+			}
 			continue
 		}
-		
+
 		if strings.HasPrefix(line, "#") { // If the line has a prefix with # we check if its the pending Room type either start or end
 			if line == "##start" {
 				pendingType = "start"
@@ -77,14 +77,14 @@ func parseFile(filepath string) (*AntFarm, error) {
 				return nil, fmt.Errorf("Invalid room format")
 			}
 
-			// Parse to store coordinates for bonus repository 
+			// Parse to store coordinates for bonus repository
 			x, _ := strconv.Atoi(parts[1]) // Coordinate X
 			y, _ := strconv.Atoi(parts[2]) // Coordinate Y
 
 			room := &Room{
-				name: parts[0],
-				x: x,
-				y: y,
+				name:  parts[0],
+				x:     x,
+				y:     y,
 				links: []*Room{},
 			}
 
@@ -98,7 +98,7 @@ func parseFile(filepath string) (*AntFarm, error) {
 				pendingType = ""
 			}
 		}
-		
+
 		// Parsing Links
 		if strings.Contains(line, "-") {
 			parts := strings.Split(line, "-")
@@ -110,13 +110,13 @@ func parseFile(filepath string) (*AntFarm, error) {
 			room1.links = append(room1.links, room2)
 			room2.links = append(room2.links, room1)
 		}
-	}	
-	
+	}
+
 	// Error: Hits an end of file condition without reading any data
 	err = scanner.Err()
 	if err != nil {
 		return nil, fmt.Errorf("Scanner Error")
-	}	
+	}
 
 	// Error: Ant Farm does not have a start or end room
 
@@ -132,15 +132,15 @@ Breadth First Search answers two questions:
 1) Is there a path from node A to node B?
 2) What is the shortest path from node A to node B?
 
-Using queues: search nodes in the order they were added 
+Using queues: search nodes in the order they were added
 
 Goal: Implement BFS on all paths and sort the paths
 
 Summary:
--> Initialize a queue to store paths and a map to track visited paths. 
+-> Initialize a queue to store paths and a map to track visited paths.
 -> Start with the start room, enqueueing it and mark it as visited
--> While there are paths in the queue 
-	-> Dequeue a path 
+-> While there are paths in the queue
+	-> Dequeue a path
 	-> Get the last room in the path
 	-> If the last room in the path is an end room, this path is considered a complete path and add it to the list of paths.
 	-> Else, for each linked/connecting room
@@ -156,30 +156,30 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 	// Each element in the queue is a path (a list of rooms)
 	// -> Starting Point: Enqueue start room
 	var paths []*Path
-	queue := []Path { 
+	queue := []Path{
 		{rooms: []*Room{antFarm.startRoom},
-		numberOfRooms: 1},
-	} 
-	visited := map[string]bool{antFarm.startRoom.name:true}
+			numberOfRooms: 1},
+	}
+	visited := map[string]bool{antFarm.startRoom.name: true}
 
 	// We would like to prevent cycles in the farm and we use a visited map by doing so
 	for len(queue) != 0 {
-		path := queue[0] // Extract from the front of the queue 
+		path := queue[0]  // Extract from the front of the queue
 		queue = queue[1:] // Mechanism to dequeue from the front of the queue
 		lastRoom := path.rooms[len(path.rooms)-1]
-		
+
 		if lastRoom == antFarm.endRoom {
 			paths = append(paths, &path)
 			continue
 		}
-		
+
 		for _, link := range lastRoom.links {
 			if !visited[link.name] {
-				newPathRooms := make([]*Room, len(path.rooms)) 
+				newPathRooms := make([]*Room, len(path.rooms))
 				copy(newPathRooms, path.rooms) // Copying existing path to new path
 				newPathRooms = append(newPathRooms, link)
 				newPath := Path{
-					rooms: newPathRooms,
+					rooms:         newPathRooms,
 					numberOfRooms: len(newPathRooms),
 				}
 				queue = append(queue, newPath)
@@ -195,10 +195,9 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 	return paths
 }
 
-/* 
+/*
 Goal: We need to move the ants iteratively and print their movements based on
 the sorted list of paths from the BFS traversal
-
 
 Data structures to track:
 
@@ -207,22 +206,21 @@ Data structures to track:
 * Which index `i` in the path the ant with ID is in ("row")?
 * How many ants are assigned to each path?
 
-2. Assign Ants to Paths: Distribute ants to paths based on the numberOfRoomss of the paths to ensure optimal movement  
+2. Assign Ants to Paths: Distribute ants to paths based on the numberOfRoomss of the paths to ensure optimal movement
 * Assign each ant to the shortest path seen, considering the number of ants already assigned to each path
 
 3. Simulating and Printing movements: We must iteratively move the ants along the paths, printing their movements
 * At each step, move all ants that are able to make a move and print their new positions
 * We continue this until we reach the terminating condition which is all ants reaching the end room
-
 */
 func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	// 1. Init data structs
-	antPaths := make(map[int]int) // Map to track which path each ant is assigned to
+	antPaths := make(map[int]int)     // Map to track which path each ant is assigned to
 	antPositions := make(map[int]int) // Map to track each ant's current position in assigned path => maps antID to block index
-	antsInPath := make([]int, len(sortedPaths)) 
+	antsInPath := make([]int, len(sortedPaths))
 
 	// 2. Assign Ants to Paths
-	for antID := 1; antID < antFarm.numberOfAnts; antID++ {
+	for antID := 1; antID <= antFarm.numberOfAnts; antID++ {
 		pathIndex := 0
 		minCost := antsInPath[0] + sortedPaths[0].numberOfRooms
 		for i := 1; i < len(sortedPaths); i++ {
@@ -233,9 +231,9 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 			}
 		}
 		antPaths[antID] = pathIndex // That ant now belongs to the assigned path
-		antsInPath[pathIndex]++ // Increment the number of ants in that chosen path
+		antsInPath[pathIndex]++     // Increment the number of ants in that chosen path
 	}
-	
+
 	// 3. Simulate and Print Movements
 	// Iterate through all ants and move them along their assigned paths
 	// Print the movements of the ants for the current step
@@ -244,14 +242,16 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	// var moves string
 	var currentRoomName string
 	var stepPrint string
-	for step := 0 ;; step++ { // Simulating each step
+	LastAnt := len(sortedPaths)
+
+	for step := 0; ; step++ { // Simulating each step
 		antMoved = false
 		// moves = ""
-		for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
-			if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms-1 { // -1 because it's an index
-				antPositions[antID]++ // Update ant position to i+1 where i is the ant's current position
+		for antID := 1; antID <= LastAnt; antID++ {
+			if antPositions[antID] < sortedPaths[antPaths[antID]].numberOfRooms-1 {
+				antPositions[antID]++
 				antMoved = true
-				currentRoomName = sortedPaths[pathIndex].rooms[antPositions[antID]].name
+				currentRoomName = sortedPaths[antPaths[antID]].rooms[antPositions[antID]].name
 				stepPrint += "L"
 				stepPrint += fmt.Sprint(antID)
 				stepPrint += "-"
@@ -259,6 +259,22 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 				stepPrint += " "
 			}
 		}
+		// fmt.Println("Step: ", LastAnt, " ")
+		if LastAnt < antFarm.numberOfAnts {
+			LastAnt += 1
+		}
+		// for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
+		// 	if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms-1 { // -1 because it's an index
+		// 		antPositions[antID]++ // Update ant position to i+1 where i is the ant's current position
+		// 		antMoved = true
+		// 		currentRoomName = sortedPaths[pathIndex].rooms[antPositions[antID]].name
+		// 		stepPrint += "L"
+		// 		stepPrint += fmt.Sprint(antID)
+		// 		stepPrint += "-"
+		// 		stepPrint += currentRoomName
+		// 		stepPrint += " "
+		// 	}
+		// }
 		if !antMoved {
 			break
 		}
@@ -271,7 +287,7 @@ func main() {
 	args := os.Args[1:]
 	if len(args) != 1 {
 		fmt.Println("Number of arguments passed in leads to program termination.")
-		return 
+		return
 	}
 	filepath := os.Args[1]
 
@@ -297,7 +313,7 @@ func main() {
 	antFarm, err := parseFile(filepath)
 	if err != nil {
 		fmt.Println("ERROR:", err)
-		return 
+		return
 	}
 
 	sortedPaths := bfsTraversal(antFarm)
