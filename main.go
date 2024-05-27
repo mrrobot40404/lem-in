@@ -219,6 +219,15 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	antPositions := make(map[int]int) // Map to track each ant's current position in assigned path => maps antID to block index
 	antsInPath := make([]int, len(sortedPaths))
 
+	fmt.Println("Number of Paths: ", len(sortedPaths))
+	for i := 0; i < len(sortedPaths); i++ {
+		fmt.Print("Path ", i, ": ")
+		for j := 0; j < sortedPaths[i].numberOfRooms; j++ {
+			fmt.Print(sortedPaths[i].rooms[j].name, "->")
+		}
+		fmt.Println()
+	}
+
 	// 2. Assign Ants to Paths
 	for antID := 1; antID <= antFarm.numberOfAnts; antID++ {
 		pathIndex := 0
@@ -242,8 +251,7 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 	// var moves string
 	var currentRoomName string
 	var stepPrint string
-	LastAnt := len(antFarm.startRoom.links)
-
+	LastAnt := len(sortedPaths) //!if we used len(sortedPaths) instead of len(antFarm.startRoom.links): now it depends on the paths found and not on assumption of how much it supposed to be
 	for step := 0; ; step++ { // Simulating each step
 		antMoved = false
 		// moves = ""
@@ -317,6 +325,5 @@ func main() {
 	}
 
 	sortedPaths := bfsTraversal(antFarm)
-
 	distributeAnts(sortedPaths, antFarm)
 }
