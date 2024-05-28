@@ -214,7 +214,7 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 				//! issue-2: marking rooms visited forever here - reset when a path is found
 				visited[link.name] = true // Mark as visited
 				//! needs a condition to break for example01
-				break //* if we break here, we will only consider the first link in the links, works for ex01
+				// break //* if we break here, we will only consider the first link in the links, works for example01
 			}
 		}
 	}
