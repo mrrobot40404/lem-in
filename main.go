@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+type Ant struct {
+	id       int
+	roomName string
+}
+
 type Room struct {
 	name  string  // Room Identifier (Could be digit/string/whatever)
 	x, y  int     // Coordinates for visualization
@@ -163,20 +168,21 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 		},
 	}
 	visited := map[string]bool{antFarm.startRoom.name: true}
-	steps := 0
+	// steps := 0
 	// We would like to prevent cycles in the farm and we use a visited map by doing so
 	for len(queue) != 0 {
 		path := queue[0]  // Extract from the front of the queue
 		queue = queue[1:] // Mechanism to dequeue from the front of the queue
 		lastRoom := path.rooms[len(path.rooms)-1]
-		steps++
-		fmt.Println("Step: ", steps, " Room: ", lastRoom.name)
-		// test print
+		// print test
+		// steps++
+		// fmt.Println("Step: ", steps, " Room: ", lastRoom.name)
 		// fmt.Println("Last Room: ", lastRoom.name)
 		if lastRoom == antFarm.endRoom {
 			//! fix issue-2: make the marking of visited here
-			fmt.Println("Last Room: ", antFarm.endRoom.name)
-			fmt.Println("Last Room: ", lastRoom.name)
+			// print test
+			// fmt.Println("Last Room: ", antFarm.endRoom.name)
+			// fmt.Println("Last Room: ", lastRoom.name)
 			// reset visited map for the next path
 			visited = map[string]bool{antFarm.startRoom.name: true}
 			// Append the path to the list of paths
@@ -245,14 +251,15 @@ Data structures to track:
 * We continue this until we reach the terminating condition which is all ants reaching the end room
 */
 func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
-	fmt.Println("Number of Paths: ", len(sortedPaths))
-	for i := 0; i < len(sortedPaths); i++ {
-		fmt.Print("Path ", i, ": ")
-		for j := 0; j < sortedPaths[i].numberOfRooms; j++ {
-			fmt.Print(sortedPaths[i].rooms[j].name, "->")
-		}
-		fmt.Println()
-	}
+	// print test: sorted paths
+	// fmt.Println("Number of Paths: ", len(sortedPaths))
+	// for i := 0; i < len(sortedPaths); i++ {
+	// 	fmt.Print("Path ", i, ": ")
+	// 	for j := 0; j < sortedPaths[i].numberOfRooms; j++ {
+	// 		fmt.Print(sortedPaths[i].rooms[j].name, "->")
+	// 	}
+	// 	fmt.Println()
+	// }
 
 	// 1. Init data structs
 	antPaths := make(map[int]int)     // Map to track which path each ant is assigned to
@@ -269,109 +276,82 @@ func distributeAnts(sortedPaths []*Path, antFarm *AntFarm) {
 				minCost = cost
 				pathIndex = i // We keep on updating the minimum cost and path index to the new min cost
 			}
-			// else {
-			// 	break
-			// }
 		}
 		antPaths[antID] = pathIndex //! That ant now belongs to the assigned path
 		antsInPath[pathIndex]++     // Increment the number of ants in that chosen path
 	}
 
-	// Print the assignment of ants to paths
-	for antID, pathIndex := range antPaths {
-		fmt.Println("Ant ", antID, " assigned to path ", pathIndex)
-	}
+	// print test the assignment of ants to paths
+	// for antID, pathIndex := range antPaths {
+	// 	fmt.Println("Ant ", antID, " assigned to path ", pathIndex)
+	// }
 
 	// 3. Simulate and Print Movements
 	// Iterate through all ants and move them along their assigned paths
+	// Arrange distribution of ants by paths
 	// Print the movements of the ants for the current step
 	// Repeat until no more ants can be moved
-	//! issue-4: for L-n, 'n' represents the order of ants being moved, not the order of ants in the path. so the first ant you move or print is L1 and second is L2, etc.
-	var antMoved bool
-	// var moves string
-	var currentRoomName string
-	var stepPrint string
-	// LastAnt := len(sortedPaths) //!if we used len(sortedPaths) instead of len(antFarm.startRoom.links): now it depends on the paths found and not on assumption of how much it supposed to be
-	printPerLine := len(sortedPaths)
-	antIDStart := 1
-	for step := 0; ; step++ { // Simulating each step
-		antMoved = false
-		// moves = ""
-		// for antID := 1; antID <= LastAnt; antID++ {
-		// 	if antPositions[antID] < sortedPaths[antPaths[antID]].numberOfRooms-1 {
-		// 		antPositions[antID]++
-		// 		antMoved = true
-		// 		currentRoomName = sortedPaths[antPaths[antID]].rooms[antPositions[antID]].name
-		// 		stepPrint += "L"
-		// 		stepPrint += fmt.Sprint(antID)
-		// 		stepPrint += "-"
-		// 		stepPrint += currentRoomName
-		// 		stepPrint += " "
-		// 	}
-		// }
-		// fmt.Println("Step: ", LastAnt, " ")
-		// if LastAnt < antFarm.numberOfAnts {
-		// 	LastAnt++
-		// }
-		// fmt.Println("printPerLine: ", printPerLine)
-		// for path := 0; path < len(sortedPaths); path++ {
-		// fmt.Println("\nPath: ", path, " printPerLine: ", printPerLine, " ")
-		// prevRoomName := ""
-		counter := 0
-		startPath := 0;
-		for antID := antIDStart; antID <= antFarm.numberOfAnts; antID++ {
-			for path := startPath; path < len(sortedPaths); path++ {
-				if antPaths[antID] == path && antID <= antsInPath[path] { //find the ant in the path
-					if antPositions[antID] < sortedPaths[antPaths[antID]].numberOfRooms-1 {
-						antPositions[antID]++
-						antMoved = true
-						currentRoomName = sortedPaths[antPaths[antID]].rooms[antPositions[antID]].name
-						// if currentRoomName != prevRoomName {
-						stepPrint += "L"
-						stepPrint += fmt.Sprint(antID)
-						stepPrint += "-"
-						stepPrint += currentRoomName
-						stepPrint = stepPrint + " " //+ strconv.Itoa(printPerLine) + " "
-						if currentRoomName == antFarm.endRoom.name {
-							// counter++
-						}
-						// }
-						// prevRoomName = currentRoomName
-						startPath++
-						break
-					}
+
+	antsOutside := make(map[int][]int)
+	//define key as paths
+	for i := 0; i < len(sortedPaths); i++ {
+		antsOutside[i] = make([]int, 0)
+	}
+	//define value as the order of ants in each path
+	for i := 1; i <= len(antPaths); i++ {
+		antsOutside[antPaths[i]] = append(antsOutside[antPaths[i]], i)
+	}
+	//print test
+	// for i := 0; i < len(sortedPaths); i++ {
+	// 	fmt.Println("Path ", i, " : ", antsOutside[i])
+	// }
+	antsInside := make(map[int][]int)
+	var antMoving bool
+	var output string
+
+	for step := 1; ; step++ {
+		antMoving = false
+		for pathIndex := 0; pathIndex < len(sortedPaths); pathIndex++ {
+			// fmt.Println("pathIndex", pathIndex, " ")
+			for j := 0; j < len(antsInside[pathIndex]); j++ {
+				// fmt.Println("antsInside[pathIndex][j]", antsInside[pathIndex][j], " ")
+				if antPositions[antsInside[pathIndex][j]] < sortedPaths[pathIndex].numberOfRooms-1 {
+					// fmt.Println("Pass")
+					antMoving = true
+					antPositions[antsInside[pathIndex][j]]++
+					output += "L"
+					output += fmt.Sprint(antsInside[pathIndex][j])
+					output += "-"
+					output += sortedPaths[pathIndex].rooms[antPositions[antsInside[pathIndex][j]]].name
+					output += " "
+
 				}
 			}
-			// if startPath == len(sortedPaths) {
-			// 	break
-			// }
 		}
-		// }
-		antIDStart += counter
-		printPerLine += counter
-		// fmt.Print(stepPrint)
-		if antIDStart < antFarm.numberOfAnts {
-			printPerLine += len(sortedPaths)
+		for pathIndex := 0; pathIndex < len(sortedPaths); pathIndex++ {
+			for len(antsOutside[pathIndex]) != 0 {
+				if antPositions[antsOutside[pathIndex][0]] < sortedPaths[pathIndex].numberOfRooms-1 {
+					antMoving = true
+					antPositions[antsOutside[pathIndex][0]]++
+					output += "L"
+					output += fmt.Sprint(antsOutside[pathIndex][0])
+					output += "-"
+					output += sortedPaths[pathIndex].rooms[antPositions[antsOutside[pathIndex][0]]].name
+					output += " "
+					antID := antsOutside[pathIndex][0]
+					// fmt.Println("antID: ", antID)
+					antsInside[pathIndex] = append(antsInside[pathIndex], antID)
+					antsOutside[pathIndex] = antsOutside[pathIndex][1:]
+					// fmt.Println("antsInside[pathIndex]: ", antsInside[pathIndex])
+					break // we just want to pass one ant at a time
+				}
+			}
 		}
-		fmt.Println(stepPrint)
-		//* THIS PRINTS ANTS for POSITION n per line
-		// for antID, pathIndex := range antPaths { // For each ant, we check if it can move to the next room in its path
-		// 	if antPositions[antID] < sortedPaths[pathIndex].numberOfRooms-1 { // -1 because it's an index
-		// 		antPositions[antID]++ // Update ant position to i+1 where i is the ant's current position
-		// 		antMoved = true
-		// 		currentRoomName = sortedPaths[pathIndex].rooms[antPositions[antID]].name
-		// 		stepPrint += "L"
-		// 		stepPrint += fmt.Sprint(antID)
-		// 		stepPrint += "-"
-		// 		stepPrint += currentRoomName
-		// 		stepPrint += " "
-		// 	}
-		// }
-		if !antMoved {
+		if !antMoving {
 			break
 		}
-		// fmt.Println(stepPrint)
-		stepPrint = ""
+		fmt.Println(step, output)
+		output = ""
 	}
 }
 
@@ -407,27 +387,27 @@ func main() {
 		fmt.Println("ERROR:", err)
 		return
 	}
-	// print antfarm
-	fmt.Println("Number of Ants: ", antFarm.numberOfAnts)
-	if antFarm.startRoom != nil {
-		fmt.Println("Start Room: ", antFarm.startRoom.name)
-		for _, link := range antFarm.startRoom.links {
-			fmt.Print(link.name, " ")
-		}
-		fmt.Println()
-		fmt.Println("End Room: ", antFarm.endRoom.name)
-		for _, link := range antFarm.endRoom.links {
-			fmt.Print(link.name, " ")
-		}
-		fmt.Println()
-		for _, room := range antFarm.rooms {
-			fmt.Print("Room: ", room.name, " Links: ")
-			for _, link := range room.links {
-				fmt.Print(link.name, " ")
-			}
-			fmt.Println()
-		}
-	}
+	// print test: antfarm
+	// fmt.Println("Number of Ants: ", antFarm.numberOfAnts)
+	// if antFarm.startRoom != nil {
+	// 	fmt.Println("Start Room: ", antFarm.startRoom.name)
+	// 	for _, link := range antFarm.startRoom.links {
+	// 		fmt.Print(link.name, " ")
+	// 	}
+	// 	fmt.Println()
+	// 	fmt.Println("End Room: ", antFarm.endRoom.name)
+	// 	for _, link := range antFarm.endRoom.links {
+	// 		fmt.Print(link.name, " ")
+	// 	}
+	// 	fmt.Println()
+	// 	for _, room := range antFarm.rooms {
+	// 		fmt.Print("Room: ", room.name, " Links: ")
+	// 		for _, link := range room.links {
+	// 			fmt.Print(link.name, " ")
+	// 		}
+	// 		fmt.Println()
+	// 	}
+	// }
 	sortedPaths := bfsTraversal(antFarm)
 	if len(sortedPaths) == 0 {
 		fmt.Println("ERROR: invalid data format")
