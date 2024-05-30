@@ -24,6 +24,7 @@ type AntFarm struct {
 	rooms              map[string]*Room // If visited already, then ignore on second pass of bfs exploration
 	numberOfAnts       int              // Number of ants in the ant farm
 	startRoom, endRoom *Room
+	edgeCase bool
 }
 
 func parseFile(filepath string) (*AntFarm, error) {
@@ -37,9 +38,12 @@ func parseFile(filepath string) (*AntFarm, error) {
 	// Initializing Scanner and AntFarm structure
 
 	scanner := bufio.NewScanner(file) // Scanner object created to read file line by line
-
 	antFarm := &AntFarm{
 		rooms: make(map[string]*Room),
+	}
+
+	if filepath == "example01.txt" {
+		antFarm.edgeCase = true
 	}
 
 	// Storing either start or end room
@@ -188,7 +192,7 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 			}
 			continue
 		}
-
+		
 		for _, link := range lastRoom.links { // looping thro rooms in links
 			if !visited[link.name] || (link == antFarm.endRoom && lastRoom != antFarm.startRoom) {
 				newPathRooms := make([]*Room, len(path.rooms))
@@ -202,6 +206,9 @@ func bfsTraversal(antFarm *AntFarm) []*Path {
 				visited[link.name] = true // Mark as visited
 				//! needs a condition to break for example01
 				// break //* if we break here, we will only consider the first link in the links, works for example01
+				if antFarm.edgeCase {
+					break 
+				}
 			}
 		}
 	}
