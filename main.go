@@ -9,11 +9,6 @@ import (
 	"strings"
 )
 
-type Ant struct {
-	id       int
-	roomName string
-}
-
 type Room struct {
 	name  string  // Room Identifier (Could be digit/string/whatever)
 	x, y  int     // Coordinates for visualization
@@ -61,7 +56,7 @@ func parseFile(filepath string) (*AntFarm, error) {
 		if antFarm.numberOfAnts == 0 {
 			antFarm.numberOfAnts, err = strconv.Atoi(line)
 			if err != nil {
-				return nil, fmt.Errorf("Invalid number of ants")
+				return nil, fmt.Errorf("invalid data format")
 			}
 			continue
 		}
@@ -79,7 +74,7 @@ func parseFile(filepath string) (*AntFarm, error) {
 		if strings.Contains(line, " ") {
 			parts := strings.Split(line, " ") // []string
 			if len(parts) != 3 {
-				return nil, fmt.Errorf("Invalid room format")
+				return nil, fmt.Errorf("invalid data format")
 			}
 
 			// Parse to store coordinates for bonus repository
@@ -108,7 +103,7 @@ func parseFile(filepath string) (*AntFarm, error) {
 		if strings.Contains(line, "-") {
 			parts := strings.Split(line, "-")
 			if len(parts) != 2 {
-				return nil, fmt.Errorf("Invalid link format")
+				return nil, fmt.Errorf("invalid data format") // Invalid link format
 			}
 			room1 := antFarm.rooms[parts[0]]
 			room2 := antFarm.rooms[parts[1]]
@@ -120,13 +115,13 @@ func parseFile(filepath string) (*AntFarm, error) {
 	// Error: Hits an end of file condition without reading any data
 	err = scanner.Err()
 	if err != nil {
-		return nil, fmt.Errorf("Scanner Error")
+		return nil, fmt.Errorf("scanner Error")
 	}
 
 	// Error: Ant Farm does not have a start or end room
 
 	if antFarm.startRoom == nil || antFarm.endRoom == nil {
-		return nil, fmt.Errorf("Missing Start Room or End Room")
+		return nil, fmt.Errorf("missing Start Room or End Room")
 	}
 
 	return antFarm, nil
